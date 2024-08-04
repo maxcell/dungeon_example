@@ -17,3 +17,4 @@ lto = "thin"
 
 [dependencies]
 bevy = "0.14.1"
+bevy-inspector-egui = "0.25.1"

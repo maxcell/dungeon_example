@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::camera};
+use bevy::{prelude::*};
 
 const TILE_SIZE: f32 = 64.0;
 const TILE_SPACER: f32 = 0.0;
@@ -21,11 +21,24 @@ impl Map {
   }
 }
 
+pub fn spawn_world(mut commands: Commands) {
+  let map = Map::new(30);
+  
+  commands.spawn(SpriteBundle {
+      sprite: Sprite {
+          
+          color: Color::linear_rgb(100.0, 0.0, 0.0),
+          custom_size: Some(Vec2::new(map.physical_size, map.physical_size)),
+          ..default()
+      }
+      ,..default()
+  });
+}
+
+
 #[derive(Component)]
 pub struct MyGameCamera;
 
-pub fn spawn_camera(mut commands: Commands) {
-    let camera = camera::OrthographicProjection::default();
-
-    commands.spawn((camera, MyGameCamera));
+pub fn spawn_camera(mut commands: Commands) {    
+    commands.spawn(Camera2dBundle::default());
 }
