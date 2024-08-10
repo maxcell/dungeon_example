@@ -1,5 +1,7 @@
 use bevy::{prelude::*};
 
+use crate::assets::ImageAssets;
+
 const TILE_SIZE: f32 = 64.0;
 const TILE_SPACER: f32 = 0.0;
 
@@ -21,18 +23,19 @@ impl Map {
   }
 }
 
-pub fn spawn_world(mut commands: Commands) {
+pub fn spawn_world(mut commands: Commands, my_assets: Res<ImageAssets>) {
   let map = Map::new(30);
+
+  let mut texture_atlas = TextureAtlas::from(my_assets.layout.clone());
+  texture_atlas.index = 14;
+
+  commands.insert()
   
-  commands.spawn(SpriteBundle {
-      sprite: Sprite {
-          
-          color: Color::linear_rgb(100.0, 0.0, 0.0),
-          custom_size: Some(Vec2::new(map.physical_size, map.physical_size)),
-          ..default()
-      }
-      ,..default()
-  });
+  // commands.spawn((SpriteBundle {
+  //     texture: my_assets.ground.clone(),
+  //     // transform: Transform::from_xyz(0.0, -64.0, 0.0),
+  //   ..default()
+  // }, texture_atlas));
 }
 
 
