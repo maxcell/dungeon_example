@@ -81,6 +81,6 @@ pub fn spawn_camera(mut commands: Commands) {
   let mut camera =  Camera2dBundle {
     ..Default::default()
   };
-  camera.projection.scale *= 2.5;
+  // camera.projection.scale *= 1.5;
     commands.spawn(camera);
 }

@@ -16,5 +16,8 @@ pub struct ImageAssets {
   pub layout: Handle<TextureAtlasLayout>,
 
   #[asset(path = "tilesheet.png")]
-  pub ground: Handle<Image>
+  pub ground: Handle<Image>,
+
+  #[asset(path = "prince-modal-Sheet.png")]
+  pub player: Handle<Image>
 }
