@@ -19,3 +19,7 @@ lto = "thin"
 bevy = "0.14.1"
 bevy-inspector-egui = "0.25.1"
 bevy_asset_loader = { version = "0.21.0", features = ["2d"] }
+bevy_ecs_tilemap = { version = "0.14.0" }
+
+[features]
+default = ["bevy_ecs_tilemap/atlas"]
