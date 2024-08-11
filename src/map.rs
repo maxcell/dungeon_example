@@ -1,7 +1,7 @@
 use bevy::{prelude::*};
 use bevy_ecs_tilemap::{map::{TilemapId, TilemapSize, TilemapTexture, TilemapTileSize, TilemapType}, prelude::get_tilemap_center_transform, tiles::{TileBundle, TilePos, TileStorage, TileTextureIndex}, TilemapBundle};
 
-use crate::assets::ImageAssets;
+use crate::{assets::ImageAssets, player::Player};
 
 const TILE_SIZE: f32 = 64.0;
 const TILE_SPACER: f32 = 0.0;
@@ -73,12 +73,38 @@ pub fn spawn_world(mut commands: Commands, my_assets: Res<ImageAssets>) {
   });
 }
 
+/// How quickly should the camera snap to the desired location.
+const CAMERA_DECAY_RATE: f32 = 2.;
+
+/// Update the camera position by tracking the player.
+pub fn update_camera(
+  mut camera: Query<&mut Transform, (With<Camera2d>, Without<Player>)>,
+  player: Query<&Transform, (With<Player>, Without<Camera2d>)>,
+  time: Res<Time>,
+) {
+  let Ok(mut camera) = camera.get_single_mut() else {
+      return;
+  };
+
+  let Ok(player) = player.get_single() else {
+      return;
+  };
+
+  let Vec3 { x, y, .. } = player.translation;
+  let direction = Vec3::new(x, y, camera.translation.z);
+
+  // Applies a smooth effect to camera movement using stable interpolation
+  // between the camera position and the player position on the x and y axes.
+  camera
+      .translation = camera.translation.lerp(direction, time.delta_seconds() * CAMERA_DECAY_RATE) ;
+}
+
 
 #[derive(Component)]
 pub struct MyGameCamera;
 
 pub fn spawn_camera(mut commands: Commands) {    
-  let mut camera =  Camera2dBundle {
+  let camera =  Camera2dBundle {
     ..Default::default()
   };
   // camera.projection.scale *= 1.5;
