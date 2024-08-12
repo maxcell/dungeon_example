@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::*;
 
 
 #[derive(Resource)]
@@ -9,19 +10,37 @@ pub enum Direction {
     Right,
 }
 
-
-
-pub fn user_input(
-    input: Res<ButtonInput<KeyCode>>,
-    mut last_pressed: ResMut<Direction>,
-) {
-    if input.pressed(KeyCode::ArrowUp) {
-        *last_pressed = Direction::Up;
-    } else if input.pressed(KeyCode::ArrowDown) {
-        *last_pressed = Direction::Down;
-    } else if input.pressed(KeyCode::ArrowLeft) {
-        *last_pressed = Direction::Left;
-    } else if input.pressed(KeyCode::ArrowRight) {
-        *last_pressed = Direction::Right;
-    }
+#[derive(PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
+pub enum PlayerAction {
+  Move
 }
+
+impl Actionlike for PlayerAction {
+  fn input_control_kind(&self) -> InputControlKind {
+    match self {
+      PlayerAction::Move => InputControlKind::DualAxis,
+    }
+  }
+}
+
+impl PlayerAction {
+  pub fn default_input_map() -> InputMap<Self> {
+
+    // Apply controls to the input
+    let mut input_map = InputMap::default();
+    input_map.insert_dual_axis(PlayerAction::Move, KeyboardVirtualDPad::WASD);
+
+    input_map
+  } 
+}
+
+// impl PlayerAction {
+//   pub fn default_input_map() -> InputMap<Self> {
+//     let mut input_map = InputMap::default();
+//     input_map.with_dual_axis(PlayerAction::Move, KeyboardVirtualDPad::WASD)
+//     // input_map.insert_dual_axis(Self::Move, KeyboardVirtualDPad::WASD);
+
+    
+//   }
+
+// }

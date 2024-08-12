@@ -1,13 +1,13 @@
 use bevy::prelude::*;
+use leafwing_input_manager::{prelude::*, InputManagerBundle};
 
-use crate::assets::ImageAssets;
+use crate::{assets::ImageAssets, controls::PlayerAction};
 
 #[derive(Component)]
 pub struct Player;
 
 
 pub fn spawn_player(mut commands: Commands, my_assets: Res<ImageAssets>) {
-
   commands.spawn((SpriteBundle {
     texture: my_assets.player.clone(),
     // Spawn it on top of the layer of the map
@@ -16,26 +16,18 @@ pub fn spawn_player(mut commands: Commands, my_assets: Res<ImageAssets>) {
       ..Default::default()
     },
     ..Default::default()
-   }, Player));
+   }, InputManagerBundle::with_map(
+    PlayerAction::default_input_map()
+   ))).insert(Player);
 }
 
-// TODO: Come and tidy this up a bit so not just on keyboard
-pub fn move_player(keyboard_input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Transform, With<Player>>, time: Res<Time>) {
-  let mut player_transform = query.single_mut();
+pub fn move_player(query: Query<&ActionState<PlayerAction>, With<Player>>, mut player_query:  Query<&mut Transform, With<Player>>, time: Res<Time>) {
+  let action_state = query.single();
+  let mut player_transform = player_query.single_mut();
 
-  // Direction, tile speed, and scaling it by consistent frame-rate
-  if keyboard_input.pressed(KeyCode::ArrowLeft) ||  keyboard_input.pressed(KeyCode::KeyA) {
-    player_transform.translation.x += ( -1.0) * 64.0 * time.delta_seconds();
-  }
-  if keyboard_input.pressed(KeyCode::ArrowRight) ||  keyboard_input.pressed(KeyCode::KeyD) {
-    player_transform.translation.x += ( 1.0) * 64.0 * time.delta_seconds();
-  }
+  let axis_pair = action_state.axis_pair(&PlayerAction::Move);
 
-  if keyboard_input.pressed(KeyCode::ArrowUp) || keyboard_input.pressed(KeyCode::KeyW) {
-    player_transform.translation.y += ( 1.0) * 64.0 * time.delta_seconds();
-  }
 
-  if keyboard_input.pressed(KeyCode::ArrowDown) ||  keyboard_input.pressed(KeyCode::KeyS) {
-    player_transform.translation.y += (-1.0) * 64.0 * time.delta_seconds();
-  }
+  player_transform.translation.x += (axis_pair.x) * 64.0 * time.delta_seconds();
+  player_transform.translation.y += (axis_pair.y) * 64.0 * time.delta_seconds();
 }
